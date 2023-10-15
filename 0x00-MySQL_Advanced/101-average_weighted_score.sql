@@ -1,0 +1,2 @@
+--a stored procedure
+-- computes and store the average weighted score for all students. 
