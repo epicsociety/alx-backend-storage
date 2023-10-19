@@ -4,7 +4,18 @@
 
 import redis
 import uuid
-from typing import Union, Optional, Callable
+from typing import Union, Callable
+import functools
+
+
+def count_calls(method):
+    """ implement a system to counting"""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -14,6 +25,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         takes a data argument and returns a string
