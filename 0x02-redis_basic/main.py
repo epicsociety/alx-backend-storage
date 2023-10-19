@@ -19,7 +19,6 @@ cache.store(b"second")
 cache.store(b"third")
 print(cache.get(cache.store.__qualname__))
 
-
 local_redis = redis.Redis()
 print(local_redis.get(key))
 

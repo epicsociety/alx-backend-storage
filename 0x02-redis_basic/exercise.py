@@ -18,6 +18,25 @@ def count_calls(method):
     return wrapper
 
 
+def call_history(method):
+    """
+    store the history of inputs and outputs for a particular function
+    """
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        inputs_key = f"{method.__qualname__}:inputs"
+        outputs_key = f"{method.__qualname__}:outputs"
+
+        self._redis.rpush(inputs_key, str(args))
+
+        output = method(self, *args, **kwargs)
+
+        self._redis.rpush(outputs_key, str(output))
+
+        return output
+    return wrapper
+
+
 class Cache:
     """ store an instance of the Redis client as a private variable """
     def __init__(self) -> None:
@@ -26,6 +45,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         takes a data argument and returns a string
