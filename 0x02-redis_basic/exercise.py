@@ -77,6 +77,7 @@ class Cache:
 
 
 def replay(method):
+    """ display the history of calls of the function store"""
     inputs_key = f"{method.__qualname__}:inputs"
     outputs_key = f"{method.__qualname__}:outputs"
 
