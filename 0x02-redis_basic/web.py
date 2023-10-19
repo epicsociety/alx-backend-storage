@@ -14,8 +14,9 @@ redis_client = redis.Redis()
 def count_accesses(url):
     """how many times the URL was accessed """
     def decorator(func):
+        """ decorator"""
         def wrapper(*args, **kwargs):
-            # Increment the access count for this URL
+            """Increment the access count for this URL"""
             access_count_key = f"count:{url}"
             redis_client.incr(access_count_key)
             return func(*args, **kwargs)
