@@ -74,3 +74,24 @@ class Cache:
     def get_int(self, key: str) -> int:
         """"Parametrize Cache.get with the correct conversion function"""
         return self.get(key, fn=int)
+
+
+def replay(method):
+    inputs_key = f"{method.__qualname__}:inputs"
+    outputs_key = f"{method.__qualname__}:outputs"
+
+    inputs = cache._redis.lrange(inputs_key, 0, -1)
+    outputs = cache._redis.lrange(outputs_key, 0, -1)
+
+    print(f"{method.__qualname__} was called {len(inputs)} times:")
+
+    for args, output in zip(inputs, outputs):
+        print(f"{method.__qualname__}(*{args.decode()}) -> {output.decode()}")
+
+
+cache = Cache()
+cache.store("foo")
+cache.store("bar")
+cache.store(42)
+
+replay(cache.store)
